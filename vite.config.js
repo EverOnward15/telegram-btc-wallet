@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import basicSsl from '@vitejs/plugin-basic-ssl'; // ✅
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import inject from '@rollup/plugin-inject';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
@@ -9,7 +9,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    basicSsl(), // ✅ This enables HTTPS locally
+    basicSsl(), // Enables HTTPS locally
     react(),
   ],
   server: {
@@ -19,7 +19,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      process: path.resolve(__dirname, 'node_modules/process/browser.js'),
+      process: 'process/browser',
       stream: 'stream-browserify',
       buffer: 'buffer',
     },
@@ -40,6 +40,9 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: [
+        '@toruslabs/eccrypto', // ⛔ Prevents Rollup from breaking on import "globalThis"
+      ],
       plugins: [
         inject({
           global: ['globalThis', 'global'],
@@ -48,6 +51,9 @@ export default defineConfig({
         }),
         rollupNodePolyFill(),
       ],
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
     },
   },
 });
