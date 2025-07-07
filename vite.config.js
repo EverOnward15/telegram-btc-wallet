@@ -6,10 +6,13 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
-    basicSsl(), // Enables HTTPS locally
+    basicSsl(),
     react(),
   ],
   server: {
@@ -19,9 +22,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      process: 'process/browser',
-      stream: 'stream-browserify',
-      buffer: 'buffer',
+      process: path.resolve(__dirname, 'node_modules/process/browser.js'),
+      stream: path.resolve(__dirname, 'node_modules/stream-browserify/index.js'),
+      buffer: path.resolve(__dirname, 'node_modules/buffer/index.js'),
     },
   },
   optimizeDeps: {
@@ -40,9 +43,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: [
-        '@toruslabs/eccrypto', // ⛔ Prevents Rollup from breaking on import "globalThis"
-      ],
+      external: ['@toruslabs/eccrypto'],
       plugins: [
         inject({
           global: ['globalThis', 'global'],
