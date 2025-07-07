@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+
+import React, { useState } from "react"
+import { initWeb3AuthCore } from "./initWeb3AuthCore"
+import { fakeTelegramUser, generateFakeIdToken } from "./fakeTelegram"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [privateKey, setPrivateKey] = useState(null)
+
+  const handleLogin = async () => {
+    const idToken = generateFakeIdToken(fakeTelegramUser)
+    try {
+      const pk = await initWeb3AuthCore(idToken)
+      setPrivateKey(pk)
+    } catch (e) {
+      console.error("Web3Auth Error:", e)
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div style={{ padding: 20, marginLeft: 20, }}>
+      <h1>BTC Wallet MVP - Phase 2 (Web3Auth Core)</h1>
+      <button onClick={handleLogin}>Login with Telegram (Fake)</button>
+      {privateKey && (
+        <div style={{ marginTop: 20 }}>
+          <strong>Private Key:</strong>
+          <pre>{privateKey}</pre>
+        </div>
+      )}
+    </div>
   )
 }
 
